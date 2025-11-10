@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  ThreadsClone
-//
-//  Created by Ruslan Lantsov on 10.11.2025.
-//
-
 import SwiftUI
 
 struct ContentView: View {
