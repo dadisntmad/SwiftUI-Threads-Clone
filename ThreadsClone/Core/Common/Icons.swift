@@ -1,5 +1,5 @@
 final class Icons {
-    static let add = "add"
+    static let plus = "plus"
     static let attach = "attach"
     static let chevronLeft = "chevron_left"
     static let explore = "explore"
