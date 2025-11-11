@@ -64,7 +64,7 @@ struct SignInView: View {
                     .font(.caption)
                 
                 NavigationLink {
-                    Text("Sign Up View")
+                    SignUpView()
                         .navigationBarBackButtonHidden()
                 } label: {
                     Text("Sign Up")
