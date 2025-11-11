@@ -11,6 +11,7 @@ struct AuthButton: View {
             Text(label)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
+                .font(.callout)
                 .fontWeight(.semibold)
                 .background(Colors.buttonBg, in: RoundedRectangle(cornerRadius: 16))
                 .foregroundStyle(Colors.buttonText)

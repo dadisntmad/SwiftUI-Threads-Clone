@@ -13,4 +13,5 @@ final class Colors {
     static let threadOptionCard = Color("threadOptionCard")
     static let buttonBg = Color("buttonBg")
     static let buttonText = Color("buttonText")
+    static let formBg = Color("formBg")
 }
