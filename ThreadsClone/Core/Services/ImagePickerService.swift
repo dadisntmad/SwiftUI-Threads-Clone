@@ -23,4 +23,9 @@ class ImagePickerService {
         
         profileImage = Image(uiImage: uiImage)
     }
+    
+    func deleteImage() {
+        selectedImage = nil
+        profileImage = nil
+    }
 }

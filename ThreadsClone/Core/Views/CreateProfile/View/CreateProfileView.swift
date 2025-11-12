@@ -6,6 +6,8 @@ struct CreateProfileView: View {
     @State private var bio = ""
     @State private var link = ""
     
+    @State private var isDialogPresented = false
+    
     @State private var imagePickerService = ImagePickerService()
     
     var body: some View {
@@ -34,11 +36,25 @@ struct CreateProfileView: View {
                         }
                         
                         if let selectedImage = imagePickerService.profileImage {
-                            selectedImage
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 48, height: 48)
-                                .clipShape(Circle())
+                            Button {
+                                isDialogPresented = true
+                            } label: {
+                                selectedImage
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 48, height: 48)
+                                    .clipShape(Circle())
+                            }
+                            .confirmationDialog("Select", isPresented: $isDialogPresented) {
+                                Button(role: .destructive) {
+                                    imagePickerService.deleteImage()
+                                    isDialogPresented = false
+                                } label: {
+                                    Text("Delete")
+                                }
+                                
+                            }
+                            
                         } else {
                             PhotosPicker(selection: $imagePickerService.selectedImage) {
                                 ProfileImage(
