@@ -18,16 +18,25 @@ struct CreateProfileView: View {
                 )
                 
                 VStack {
-                    VStack(alignment: .leading) {
-                        Text("Name")
-                            .fontWeight(.bold)
-                        
-                        TextField("+ Add name", text: $name)
-                        Divider()
-                            .background(Colors.divider)
-                            .padding(.vertical, 4)
-                    }
-                    
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Name")
+                                    .fontWeight(.bold)
+                                
+                                TextField("+ Add name", text: $name)
+                                
+                                Divider()
+                                    .background(Colors.divider)
+                                    .padding(.vertical, 4)
+                            }
+                            
+                            ProfileImage(
+                                imageUrl: "https://images.pexels.com/photos/32948745/pexels-photo-32948745.jpeg",
+                                isMe: false,
+                                size: 48
+                            )
+                        }
+               
                     VStack(alignment: .leading) {
                         Text("Bio")
                             .fontWeight(.bold)

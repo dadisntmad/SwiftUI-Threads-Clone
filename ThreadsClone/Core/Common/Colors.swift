@@ -14,4 +14,5 @@ final class Colors {
     static let buttonBg = Color("buttonBg")
     static let buttonText = Color("buttonText")
     static let formBg = Color("formBg")
+    static let avatarBg = Color("avatarBg")
 }
