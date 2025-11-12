@@ -1,9 +1,12 @@
 import SwiftUI
+import PhotosUI
 
 struct CreateProfileView: View {
     @State private var name = ""
     @State private var bio = ""
     @State private var link = ""
+    
+    @State private var imagePickerService = ImagePickerService()
     
     var body: some View {
         VStack {
@@ -18,25 +21,36 @@ struct CreateProfileView: View {
                 )
                 
                 VStack {
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text("Name")
-                                    .fontWeight(.bold)
-                                
-                                TextField("+ Add name", text: $name)
-                                
-                                Divider()
-                                    .background(Colors.divider)
-                                    .padding(.vertical, 4)
-                            }
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text("Name")
+                                .fontWeight(.bold)
                             
-                            ProfileImage(
-                                imageUrl: "https://images.pexels.com/photos/32948745/pexels-photo-32948745.jpeg",
-                                isMe: false,
-                                size: 48
-                            )
+                            TextField("+ Add name", text: $name)
+                            
+                            Divider()
+                                .background(Colors.divider)
+                                .padding(.vertical, 4)
                         }
-               
+                        
+                        if let selectedImage = imagePickerService.profileImage {
+                            selectedImage
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 48, height: 48)
+                                .clipShape(Circle())
+                        } else {
+                            PhotosPicker(selection: $imagePickerService.selectedImage) {
+                                ProfileImage(
+                                    imageUrl: nil,
+                                    isMe: true,
+                                    size: 48
+                                )
+                                .tint(Colors.tintColor)
+                            }
+                        }
+                    }
+                    
                     VStack(alignment: .leading) {
                         Text("Bio")
                             .fontWeight(.bold)
@@ -55,8 +69,6 @@ struct CreateProfileView: View {
                             .textInputAutocapitalization(.never)
                             .foregroundStyle(Colors.primaryBlue)
                     }
-                    
-                    
                 }
                 .padding()
                 .font(.caption)
