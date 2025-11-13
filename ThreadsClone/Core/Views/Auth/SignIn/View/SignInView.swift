@@ -15,7 +15,12 @@ struct SignInView: View {
                     subtitle: "Enter your email and password"
                 )
                 
-                AuthForm(email: $email, password: $password)
+                CustomForm {
+                    AuthForm(
+                        email: $email,
+                        password: $password
+                    )
+                }
                 
                 AuthButton(
                     action: {},

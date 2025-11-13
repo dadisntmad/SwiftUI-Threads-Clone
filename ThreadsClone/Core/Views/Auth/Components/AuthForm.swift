@@ -5,36 +5,27 @@ struct AuthForm: View {
     @Binding var password: String
     
     var body: some View {
-        VStack {
-            VStack(alignment: .leading) {
-                Text("Email")
-                    .fontWeight(.semibold)
-                
-                TextField("+ Enter your email", text: $email)
-                    .frame(height: 24)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-            }
+        VStack(alignment: .leading) {
+            Text("Email")
+                .fontWeight(.semibold)
             
-            Divider()
-                .background(Colors.divider)
-                .padding(.vertical, 4)
+            TextField("+ Enter your email", text: $email)
+                .frame(height: 24)
+                .keyboardType(.emailAddress)
+                .textInputAutocapitalization(.never)
+        }
+        
+        Divider()
+            .background(Colors.divider)
+            .padding(.vertical, 4)
+        
+        VStack(alignment: .leading) {
+            Text("Password")
+                .fontWeight(.semibold)
             
-            VStack(alignment: .leading) {
-                Text("Password")
-                    .fontWeight(.semibold)
-                
-                SecureField("+ Enter your password", text: $password)
-                    .frame(height: 24)
-            }
+            SecureField("+ Enter your password", text: $password)
+                .frame(height: 24)
         }
-        .padding()
-        .font(.caption)
-        .overlay {
-            RoundedRectangle(cornerRadius: 18)
-                .stroke(Colors.formBorder, lineWidth: 1.5)
-        }
-        .padding()
     }
 }
 
