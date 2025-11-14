@@ -1,0 +1,38 @@
+import SwiftUI
+
+struct ThreadActionButton: View {
+    let action: () -> Void
+    let icon: String
+    let count: Int?
+    let size: Double?
+    
+    var body: some View {
+        HStack(spacing: 5) {
+            Button {
+                action()
+            } label: {
+                Image(icon)
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: size ?? 16, height: size ?? 16)
+                    .foregroundStyle(Colors.buttonBg)
+            }
+            
+            if let count = count {
+                Text(String(count))
+                    .font(.caption2)
+                    .foregroundStyle(Colors.subtitle)
+            }
+        }
+    }
+}
+
+#Preview {
+    ThreadActionButton(
+        action: {},
+        icon: Icons.heart,
+        count: 3,
+        size: 16
+    )
+}

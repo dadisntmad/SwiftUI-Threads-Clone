@@ -7,7 +7,7 @@ struct MainView: View {
         TabView(selection: $selectedTab) {
             
             Tab("", image: selectedTab == 0 ? Icons.feedFilled : Icons.feed, value: 0) {
-                Text("Home View")
+                FeedView()
             }
             
             Tab("", image: selectedTab == 1 ? Icons.exploreFilled : Icons.explore, value: 1) {
