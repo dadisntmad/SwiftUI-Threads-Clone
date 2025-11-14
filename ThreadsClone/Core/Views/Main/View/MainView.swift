@@ -11,7 +11,7 @@ struct MainView: View {
             }
             
             Tab("", image: selectedTab == 1 ? Icons.exploreFilled : Icons.explore, value: 1) {
-                Text("Explore View")
+                ExploreView()
             }
             
             Tab("", image: selectedTab == 2 ? Icons.writeFilled : Icons.write, value: 2) {
