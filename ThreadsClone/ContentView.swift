@@ -1,12 +1,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var isAuthenticated = true
+    
     var body: some View {
-        NavigationStack {
-            SignInView()
+        Group {
+            if isAuthenticated {
+                MainView()
+            } else {
+                NavigationStack {
+                    SignInView()
+                }
+            }
         }
     }
 }
+
 
 #Preview {
     ContentView()

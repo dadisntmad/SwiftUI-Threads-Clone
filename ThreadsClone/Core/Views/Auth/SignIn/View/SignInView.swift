@@ -55,7 +55,5 @@ struct SignInView: View {
 
 
 #Preview {
-    NavigationStack {
-        SignInView()
-    }
+    SignInView()
 }
