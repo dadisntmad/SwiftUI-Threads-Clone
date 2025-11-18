@@ -2,10 +2,10 @@ import SwiftUI
 
 struct MainView: View {
     @State private var selectedTab = 0
+    @State private var isPresented = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            
             Tab("", image: selectedTab == 0 ? Icons.feedFilled : Icons.feed, value: 0) {
                 FeedView()
             }
@@ -15,7 +15,7 @@ struct MainView: View {
             }
             
             Tab("", image: selectedTab == 2 ? Icons.writeFilled : Icons.write, value: 2) {
-                Text("Write View")
+                EmptyView()
             }
             
             Tab("", image: selectedTab == 3 ? Icons.heartFilled : Icons.heart, value: 3) {
@@ -25,7 +25,14 @@ struct MainView: View {
             Tab("", image: selectedTab == 4 ? Icons.profileFilled : Icons.profile, value: 4) {
                 Text("Profile View")
             }
-            
+        }
+        .sheet(isPresented: $isPresented) {
+            NewThreadSheet(selectedTab: $selectedTab)
+        }
+        .onChange(of: selectedTab) { oldValue, newValue in
+            if newValue == 2 {
+                isPresented = true
+            }
         }
     }
 }
