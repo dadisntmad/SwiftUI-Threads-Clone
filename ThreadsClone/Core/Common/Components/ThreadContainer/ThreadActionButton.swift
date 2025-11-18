@@ -5,6 +5,7 @@ struct ThreadActionButton: View {
     let icon: String
     let count: Int?
     let size: Double?
+    let color: Color?
     
     var body: some View {
         HStack(spacing: 5) {
@@ -16,7 +17,7 @@ struct ThreadActionButton: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: size ?? 16, height: size ?? 16)
-                    .foregroundStyle(Colors.buttonBg)
+                    .foregroundStyle(color ?? Colors.buttonBg)
             }
             
             if let count = count {
@@ -33,6 +34,7 @@ struct ThreadActionButton: View {
         action: {},
         icon: Icons.heart,
         count: 3,
-        size: 16
+        size: 16,
+        color: .red,
     )
 }

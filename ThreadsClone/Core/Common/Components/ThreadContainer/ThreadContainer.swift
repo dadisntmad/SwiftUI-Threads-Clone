@@ -2,11 +2,18 @@ import SwiftUI
 import Kingfisher
 
 struct ThreadContainer: View {
+    @State private var isLiked = false
+    @State private var showHeart = false
+    
     private var images = [
         "https://images.pexels.com/photos/34629969/pexels-photo-34629969.jpeg",
         "https://images.pexels.com/photos/15112647/pexels-photo-15112647.jpeg",
         "https://images.pexels.com/photos/30097108/pexels-photo-30097108.jpeg"
     ]
+    
+    private func toggleLike() {
+        isLiked.toggle()
+    }
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -53,7 +60,6 @@ struct ThreadContainer: View {
                                     .frame(width: 250, height: 300)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .clipped()
-
                             }
                         }
                     }
@@ -64,18 +70,42 @@ struct ThreadContainer: View {
                 
                 // action buttons
                 HStack(spacing: 18) {
-                    ThreadActionButton(
-                        action: {},
-                        icon: Icons.heart,
-                        count: 3,
-                        size: nil,
-                    )
+                    Button {
+                        withAnimation {
+                            toggleLike()
+                        }
+                    } label: {
+                        HStack(spacing: 5) {
+                            ZStack {
+                                Image(isLiked ? Icons.heartFilled : Icons.heart)
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundStyle(isLiked ? Color.red : Colors.buttonBg)
+                                
+                                Image(Icons.heartFilled)
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundStyle(.red)
+                                    .offset(x: 0, y: isLiked ? 0 : -24)
+                                    .opacity(isLiked ? 1 : 0)
+                            }
+                            // TODO: only show if likes > 0
+                            Text(String(5))
+                                .font(.caption2)
+                                .foregroundStyle(Colors.subtitle)
+                        }
+                    }
                     
                     ThreadActionButton(
                         action: {},
                         icon: Icons.message,
                         count: 10,
                         size: nil,
+                        color: nil,
                     )
                     
                     ThreadActionButton(
@@ -83,6 +113,7 @@ struct ThreadContainer: View {
                         icon: Icons.repost,
                         count: 7,
                         size: 14,
+                        color: nil,
                     )
                     
                     ThreadActionButton(
@@ -90,6 +121,7 @@ struct ThreadContainer: View {
                         icon: Icons.send,
                         count: nil,
                         size: 14,
+                        color: nil,
                     )
                 }
             }
