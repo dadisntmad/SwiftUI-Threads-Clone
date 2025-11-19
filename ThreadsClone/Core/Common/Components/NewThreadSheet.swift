@@ -9,6 +9,7 @@ struct NewThreadSheet: View {
     
     @State private var selectedItems: [PhotosPickerItem] = []
     @State private var selectedImages: [UIImage] = []
+    @State private var selectedIndexForDeletion: Int?
     
     @Binding var selectedTab: Int
     
@@ -70,17 +71,28 @@ struct NewThreadSheet: View {
                     .font(.subheadline)
                     .padding(.bottom)
                     
-                    
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            ForEach(selectedImages, id: \.self) { image in
+                            ForEach(Array(selectedImages.enumerated()), id: \.offset) { index, image in
                                 Image(uiImage: image)
                                     .resizable()
                                     .scaledToFill()
-                                    .frame(width: 76, height: 75)
+                                    .frame(width: 75, height: 75)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .padding(.bottom)
+                                    .onTapGesture {
+                                        selectedIndexForDeletion = index
+                                        isDialogPresented = true
+                                    }
                             }
+                        }
+                    }
+                    .confirmationDialog("Select", isPresented: $isDialogPresented) {
+                        Button("Delete", role: .destructive) {
+                            if let index = selectedIndexForDeletion {
+                                selectedImages.remove(at: index)
+                            }
+                            selectedIndexForDeletion = nil
                         }
                     }
                     
@@ -97,6 +109,7 @@ struct NewThreadSheet: View {
             Spacer()
         }
         .onChange(of: selectedItems) { _, newItems in
+            selectedItems.removeAll()
             for item in newItems {
                 item.loadTransferable(type: Data.self) { result in
                     if case .success(let data?) = result {
