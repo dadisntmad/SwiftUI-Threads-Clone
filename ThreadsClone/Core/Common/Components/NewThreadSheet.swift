@@ -1,10 +1,14 @@
 import SwiftUI
+import PhotosUI
 
 struct NewThreadSheet: View {
     @Environment(\.dismiss) private var dismiss
     
     @State private var threadText = ""
     @State private var isDialogPresented = false
+    
+    @State private var selectedItems: [PhotosPickerItem] = []
+    @State private var selectedImages: [UIImage] = []
     
     @Binding var selectedTab: Int
     
@@ -66,11 +70,42 @@ struct NewThreadSheet: View {
                     .font(.subheadline)
                     .padding(.bottom)
                     
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(selectedImages, id: \.self) { image in
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 76, height: 75)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .padding(.bottom)
+                            }
+                        }
+                    }
+                    
+                    PhotosPicker(selection: $selectedItems, matching: .images) {
+                        Image(Icons.attach)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 18, height: 18)
+                    }
                 }
             }
             .padding()
             
             Spacer()
+        }
+        .onChange(of: selectedItems) { _, newItems in
+            for item in newItems {
+                item.loadTransferable(type: Data.self) { result in
+                    if case .success(let data?) = result {
+                        if let image = UIImage(data: data) {
+                            selectedImages.append(image)
+                        }
+                    }
+                }
+            }
         }
     }
 }
