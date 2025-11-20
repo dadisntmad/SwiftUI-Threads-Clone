@@ -19,7 +19,7 @@ struct MainView: View {
             }
             
             Tab("", image: selectedTab == 3 ? Icons.heartFilled : Icons.heart, value: 3) {
-                Text("Notifications View")
+                NotificationsView()
             }
             
             Tab("", image: selectedTab == 4 ? Icons.profileFilled : Icons.profile, value: 4) {

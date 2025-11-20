@@ -5,54 +5,46 @@ struct ExploreView: View {
     
     var body: some View {
         NavigationStack {
-            List {
+            ScrollView(showsIndicators: false) {
                 ForEach(0..<15) { _ in
-                    HStack {
-                        HStack(alignment: .top, spacing: 16) {
-                            ProfileImage(
-                                imageUrl: "https://images.pexels.com/photos/32948745/pexels-photo-32948745.jpeg",
-                                isMe: false,
-                                size: 36
-                            )
-                            
-                            VStack(alignment: .leading, spacing: 0) {
-                                Text("john.doe")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .lineLimit(1)
+                    VStack {
+                        HStack {
+                            HStack(alignment: .top, spacing: 16) {
+                                ProfileImage(
+                                    imageUrl: "https://images.pexels.com/photos/32948745/pexels-photo-32948745.jpeg",
+                                    isMe: false,
+                                    size: 36
+                                )
                                 
-                                Text("John Doe")
-                                    .font(.caption)
-                                    .foregroundStyle(Colors.subtitle)
-                                    .padding(.bottom, 4)
-                                
-                                Text("1k Followers")
-                                    .font(.footnote)
-                            }
-                            .lineLimit(1)
-                        }
-                        
-                        Spacer()
-                        
-                        Button {
-                            
-                        } label: {
-                            Text("Follow")
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 7)
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(Colors.title)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Colors.buttonBorder, lineWidth:  1)
+                                VStack(alignment: .leading, spacing: 0) {
+                                    Text("john.doe")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .lineLimit(1)
+                                    
+                                    Text("John Doe")
+                                        .font(.caption)
+                                        .foregroundStyle(Colors.subtitle)
+                                        .padding(.bottom, 4)
+                                    
+                                    Text("1k Followers")
+                                        .font(.footnote)
                                 }
+                                .lineLimit(1)
+                            }
+                            
+                            Spacer()
+                            
+                            BorderedButton(action: {}, label: "Follow")
                         }
+                        .padding(.horizontal)
+                        .padding(.vertical, 4)
+                        
+                        Divider()
+                            .padding(.leading, 70)
                     }
-                    .listRowBackground(Color(UIColor.secondarySystemGroupedBackground))
                 }
             }
-            .listStyle(.plain)
             .navigationTitle("Search")
             .searchable(text: $searchText, prompt: "Search")
         }
