@@ -23,7 +23,7 @@ struct MainView: View {
             }
             
             Tab("", image: selectedTab == 4 ? Icons.profileFilled : Icons.profile, value: 4) {
-                Text("Profile View")
+                ProfileView()
             }
         }
         .sheet(isPresented: $isPresented) {
