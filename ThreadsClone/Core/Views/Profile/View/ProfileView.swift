@@ -3,14 +3,10 @@ import SwiftUI
 struct ProfileView: View {
     @Environment(\.colorScheme) private var colorScheme
     
-    @State private var sections = [
-        "Threads",
-        "Replies",
-        "Media",
-        "Reposts"
-    ]
+    @State private var selectedSection: ProfileSectionEnum = .threads
     
-    @State private var selectedSection = 0
+    @Namespace private var animation
+    
     
     var body: some View {
         NavigationStack {
@@ -73,33 +69,47 @@ struct ProfileView: View {
                                 .foregroundStyle(colorScheme == .light ? .white : .black)
                         }
                         .padding()
-                     
-                        HStack {
-                            ForEach(Array(sections.enumerated()), id: \.offset) { index, section in
-                                Spacer()
-                                
-                                Button {
-                                    selectedSection = index
-                                } label: {
-                                    Text(section)
-                                        .font(.body)
-                                        .foregroundStyle(selectedSection == index ? Colors.title : Colors.subtitle)
+                        
+                        GeometryReader { geometry in
+                            let count = CGFloat(ProfileSectionEnum.allCases.count)
+                            let width = geometry.size.width / count - 5
+                            
+                            VStack {
+                                HStack {
+                                    ForEach(ProfileSectionEnum.allCases, id: \.id) { section in
+                                        VStack {
+                                            Text(section.title)
+                                                .font(.subheadline)
+                                                .foregroundStyle(selectedSection == section ? Colors.title : Colors.subtitle)
+                                                .fontWeight(selectedSection == section ? .semibold : .regular)
+                                            
+                                            if selectedSection == section {
+                                                Rectangle()
+                                                    .frame(width: width, height: 1)
+                                                    .matchedGeometryEffect(id: "item", in: animation)
+                                            } else {
+                                                Rectangle()
+                                                    .fill(.clear)
+                                                    .frame(width: width, height: 1)
+                                            }
+                                        }
+                                        .onTapGesture {
+                                            withAnimation {
+                                                selectedSection = section
+                                            }
+                                        }
+                                    }
                                 }
-                                
-                                Spacer()
                             }
                         }
+                        .padding(.bottom)
                         
-                        Divider()
-                            .background(Colors.divider)
-                        
-                        ForEach(0..<25) { _ in
-                            ThreadContainer()
-                                .padding()
-                            
-                            Divider()
-                                .background(Colors.divider)
+                        LazyVStack {
+                            ForEach(0..<25, id: \.self) { _ in
+                                ThreadContainer()
+                            }
                         }
+                        .padding()
                     }
                 }
             }
