@@ -107,9 +107,12 @@ struct ProfileView: View {
                         LazyVStack {
                             ForEach(0..<25, id: \.self) { _ in
                                 ThreadContainer()
+                                    .padding()
+                                
+                                Divider()
+                                    .background(Colors.divider)
                             }
                         }
-                        .padding()
                     }
                 }
             }
