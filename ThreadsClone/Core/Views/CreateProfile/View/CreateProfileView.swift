@@ -91,7 +91,9 @@ struct CreateProfileView: View {
                 
                 AuthButton(
                     action: {},
-                    label: "Next"
+                    label: "Next",
+                    isLoading: false,
+                    isDisabled: false
                 )
             }
             .scrollBounceBehavior(.basedOnSize)

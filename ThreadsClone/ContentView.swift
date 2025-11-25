@@ -1,18 +1,20 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isAuthenticated = true
+    @State private var authViewModel = AuthViewModel()
     
     var body: some View {
         Group {
-            if isAuthenticated {
+            if authViewModel.isAuthenticated {
                 MainView()
             } else {
                 NavigationStack {
                     SignInView()
+                    
                 }
             }
         }
+        .environment(authViewModel)
     }
 }
 

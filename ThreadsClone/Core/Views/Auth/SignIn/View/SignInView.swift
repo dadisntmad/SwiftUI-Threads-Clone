@@ -24,7 +24,9 @@ struct SignInView: View {
                 
                 AuthButton(
                     action: {},
-                    label: "Sign In"
+                    label: "Sign In",
+                    isLoading: false,
+                    isDisabled: false
                 )
             }
             .scrollBounceBehavior(.basedOnSize)

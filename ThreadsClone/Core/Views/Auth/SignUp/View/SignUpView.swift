@@ -2,9 +2,14 @@ import SwiftUI
 
 struct SignUpView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AuthViewModel.self) private var authViewModel
     
     @State private var email = ""
     @State private var password = ""
+    
+    var isDisabled: Bool {
+        email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || password.count < 5
+    }
     
     var body: some View {
         VStack {
@@ -27,9 +32,19 @@ struct SignUpView: View {
                 }
                 
                 AuthButton(
-                    action: {},
-                    label: "Sign Up"
+                    action: {
+                        Task {
+                            try await authViewModel.signUp(
+                                email: email,
+                                password: password
+                            )
+                        }
+                    },
+                    label: "Sign Up",
+                    isLoading: authViewModel.isLoading,
+                    isDisabled: isDisabled
                 )
+                .disabled(isDisabled || authViewModel.isLoading)
             }
             .scrollBounceBehavior(.basedOnSize)
             
@@ -53,9 +68,17 @@ struct SignUpView: View {
             }
             .padding(.top)
         }
+        .navigationDestination(isPresented: Binding(
+            get: { authViewModel.isSuccess },
+            set: { authViewModel.isSuccess = $0 }
+        )) {
+            CreateProfileView()
+                .navigationBarBackButtonHidden()
+        }
     }
 }
 
 #Preview {
     SignUpView()
+        .environment(AuthViewModel())
 }
