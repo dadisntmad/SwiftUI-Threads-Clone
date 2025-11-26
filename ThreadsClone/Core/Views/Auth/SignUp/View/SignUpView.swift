@@ -69,8 +69,8 @@ struct SignUpView: View {
             .padding(.top)
         }
         .navigationDestination(isPresented: Binding(
-            get: { authViewModel.isSuccess },
-            set: { authViewModel.isSuccess = $0 }
+            get: { authViewModel.didSignUp },
+            set: { authViewModel.didSignUp = $0 }
         )) {
             CreateProfileView()
                 .navigationBarBackButtonHidden()

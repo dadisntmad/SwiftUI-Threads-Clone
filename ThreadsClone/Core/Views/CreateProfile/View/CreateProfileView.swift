@@ -2,6 +2,8 @@ import SwiftUI
 import PhotosUI
 
 struct CreateProfileView: View {
+    @Environment(AuthViewModel.self) private var authViewModel
+    
     @State private var name = ""
     @State private var bio = ""
     @State private var link = ""
@@ -9,6 +11,10 @@ struct CreateProfileView: View {
     @State private var isDialogPresented = false
     
     @State private var imagePickerService = ImagePickerService()
+    
+    var isDisabled: Bool {
+        name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
     
     var body: some View {
         VStack {
@@ -90,17 +96,32 @@ struct CreateProfileView: View {
                 }
                 
                 AuthButton(
-                    action: {},
+                    action: {
+                        Task {
+                            await authViewModel.onboardUser(
+                                fullName: name,
+                                bio: bio,
+                                link: link,
+                                image: imagePickerService.uiImage
+                            )
+                        }
+                    },
                     label: "Next",
-                    isLoading: false,
-                    isDisabled: false
+                    isLoading: authViewModel.isLoading,
+                    isDisabled: isDisabled
                 )
+                .disabled(isDisabled)
             }
             .scrollBounceBehavior(.basedOnSize)
+        }
+        .navigationDestination(isPresented: Binding(get: { authViewModel.didOnboard }, set: { authViewModel.didOnboard = $0 })) {
+            MainView()
+                .navigationBarBackButtonHidden()
         }
     }
 }
 
 #Preview {
     CreateProfileView()
+        .environment(AuthViewModel())
 }

@@ -14,7 +14,8 @@ class AuthViewModel {
     
     var errMessage: String?
     
-    var isSuccess = false
+    var didSignUp = false
+    var didOnboard = false
     var isAuthenticated = false
     
     var isLoading: Bool {
@@ -36,9 +37,9 @@ class AuthViewModel {
                 uid: fbUser.uid,
                 email: email,
                 fullName: "",
-                imageUrl: nil,
-                bio: nil,
-                link: nil,
+                imageUrl: "",
+                bio: "",
+                link: "",
                 followers: [],
                 following: []
             )
@@ -46,11 +47,41 @@ class AuthViewModel {
             try db.collection("users").document(fbUser.uid).setData(from: userModel)
             
             status = .loaded
-            isSuccess = status != .error && status == .loaded
+            didSignUp = status != .error && status == .loaded
             
         } catch {
             errMessage = error.localizedDescription
-            isSuccess = false
+            didSignUp = false
+            status = .error
+        }
+    }
+    
+    func onboardUser(fullName: String, bio: String, link: String, image: UIImage?) async {
+        guard let uid = fbUser?.uid else { return }
+        
+        let docRef = db.collection("users").document(uid)
+        
+        errMessage = nil
+        status = .loading
+        
+        do {
+            let isValidBio = !bio.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            let isValidLink = !link.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            let imageUrl = try await MediaUploaderService.upload(folderName: "profile_image", image: image)
+            
+            try await docRef.updateData([
+                "fullName": fullName,
+                "bio":  isValidBio ? bio : "",
+                "link": isValidLink ? link : "",
+                "imageUrl": imageUrl == nil ? "" : imageUrl!
+            ])
+            
+            status = .loaded
+            didOnboard = status != .error && status == .loaded
+            
+        } catch {
+            errMessage = error.localizedDescription
+            didOnboard = false
             status = .error
         }
     }

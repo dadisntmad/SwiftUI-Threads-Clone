@@ -9,7 +9,7 @@ class ImagePickerService {
     }
     
     var profileImage: Image?
-    private var uiImage: UIImage?
+    var uiImage: UIImage?
     
     
     private func pickImage(from item: PhotosPickerItem?) async {
