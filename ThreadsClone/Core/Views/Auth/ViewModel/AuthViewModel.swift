@@ -79,6 +79,7 @@ class AuthViewModel {
             
             status = .loaded
             didOnboard = status != .error && status == .loaded
+            isAuthenticated = didOnboard
             
         } catch {
             errMessage = error.localizedDescription
@@ -101,10 +102,22 @@ class AuthViewModel {
             
             status = .loaded
             didSignIn = status != .error && status == .loaded
+            isAuthenticated = didSignIn
         } catch  {
             errMessage = error.localizedDescription
             didSignIn = false
             status = .error
+        }
+    }
+    
+    func signOut() {
+        do {
+            try auth.signOut()
+            fbUser = nil
+            user = nil
+            isAuthenticated = false
+        } catch {
+            debugPrint("DEBUG: failed to sign out: \(error.localizedDescription)")
         }
     }
     
