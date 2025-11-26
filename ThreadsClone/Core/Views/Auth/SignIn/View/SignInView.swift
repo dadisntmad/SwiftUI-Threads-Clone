@@ -1,8 +1,14 @@
 import SwiftUI
 
 struct SignInView: View {
+    @Environment(AuthViewModel.self) private var authViewModel
+    
     @State private var email = ""
     @State private var password = ""
+    
+    var isDisabled: Bool {
+        email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || password.count < 5
+    }
     
     var body: some View {
         VStack {
@@ -23,10 +29,17 @@ struct SignInView: View {
                 }
                 
                 AuthButton(
-                    action: {},
+                    action: {
+                        Task {
+                            try await authViewModel.signIn(
+                                email: email,
+                                password: password
+                            )
+                        }
+                    },
                     label: "Sign In",
-                    isLoading: false,
-                    isDisabled: false
+                    isLoading: authViewModel.isLoading,
+                    isDisabled: isDisabled || authViewModel.isLoading
                 )
             }
             .scrollBounceBehavior(.basedOnSize)
@@ -52,10 +65,15 @@ struct SignInView: View {
             }
             .padding(.top)
         }
+        .navigationDestination(isPresented: Binding(get: { authViewModel.didSignIn }, set: { authViewModel.didSignIn = $0 })) {
+            MainView()
+                .navigationBarBackButtonHidden()
+        }
     }
 }
 
 
 #Preview {
     SignInView()
+        .environment(AuthViewModel())
 }

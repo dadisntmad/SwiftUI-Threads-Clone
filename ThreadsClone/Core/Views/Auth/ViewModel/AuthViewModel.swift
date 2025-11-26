@@ -16,6 +16,7 @@ class AuthViewModel {
     
     var didSignUp = false
     var didOnboard = false
+    var didSignIn = false
     var isAuthenticated = false
     
     var isLoading: Bool {
@@ -83,6 +84,42 @@ class AuthViewModel {
             errMessage = error.localizedDescription
             didOnboard = false
             status = .error
+        }
+    }
+    
+    func signIn(email: String, password: String) async throws {
+        errMessage = nil
+        status = .loading
+        
+        do {
+            let res = try await auth.signIn(withEmail: email, password: password)
+            let fbUser = res.user
+            
+            self.fbUser = fbUser
+            let user = await getCurrentUser()
+            self.user = user
+            
+            status = .loaded
+            didSignIn = status != .error && status == .loaded
+        } catch  {
+            errMessage = error.localizedDescription
+            didSignIn = false
+            status = .error
+        }
+    }
+    
+    private func getCurrentUser() async -> UserModel? {
+        guard let uid = auth.currentUser?.uid else { return nil }
+        
+        let docRef = db.collection("users").document(uid)
+        
+        do {
+            let snap = try await docRef.getDocument()
+            let user = try snap.data(as: UserModel.self)
+            return user
+        } catch  {
+            debugPrint("DEBUG: Failed to get current user: \(error.localizedDescription)")
+            return nil
         }
     }
 }
