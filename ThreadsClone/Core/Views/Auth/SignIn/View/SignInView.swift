@@ -1,10 +1,12 @@
 import SwiftUI
+import AlertToast
 
 struct SignInView: View {
     @Environment(AuthViewModel.self) private var authViewModel
     
     @State private var email = ""
     @State private var password = ""
+    @State private var showToast = false
     
     var isDisabled: Bool {
         email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || password.count < 5
@@ -35,6 +37,10 @@ struct SignInView: View {
                                 email: email,
                                 password: password
                             )
+                            
+                            if authViewModel.errMessage != nil {
+                                showToast.toggle()
+                            }
                         }
                     },
                     label: "Sign In",
@@ -68,6 +74,9 @@ struct SignInView: View {
         .navigationDestination(isPresented: Binding(get: { authViewModel.didSignIn }, set: { authViewModel.didSignIn = $0 })) {
             MainView()
                 .navigationBarBackButtonHidden()
+        }
+        .toast(isPresenting: $showToast) {
+            Toast.show(authViewModel.errMessage)
         }
     }
 }

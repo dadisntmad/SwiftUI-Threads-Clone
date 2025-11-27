@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import AlertToast
 
 struct CreateProfileView: View {
     @Environment(AuthViewModel.self) private var authViewModel
@@ -9,6 +10,7 @@ struct CreateProfileView: View {
     @State private var link = ""
     
     @State private var isDialogPresented = false
+    @State private var showToast = false
     
     @State private var imagePickerService = ImagePickerService()
     
@@ -104,6 +106,10 @@ struct CreateProfileView: View {
                                 link: link,
                                 image: imagePickerService.uiImage
                             )
+                            
+                            if authViewModel.errMessage != nil {
+                                showToast.toggle()
+                            }
                         }
                     },
                     label: "Next",
@@ -117,6 +123,9 @@ struct CreateProfileView: View {
         .navigationDestination(isPresented: Binding(get: { authViewModel.didOnboard }, set: { authViewModel.didOnboard = $0 })) {
             MainView()
                 .navigationBarBackButtonHidden()
+        }
+        .toast(isPresenting: $showToast) {
+            Toast.show(authViewModel.errMessage)
         }
     }
 }
