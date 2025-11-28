@@ -14,13 +14,21 @@ struct CreateProfileView: View {
     
     @State private var imagePickerService = ImagePickerService()
     
+    let isBackButtonPresented: Bool
+    
+    init(isBackButtonPresented: Bool = true) {
+        self.isBackButtonPresented = isBackButtonPresented
+    }
+    
     var isDisabled: Bool {
         name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
     var body: some View {
         VStack {
-            BackButton()
+            if isBackButtonPresented {
+                BackButton()
+            }
             
             Spacer()
             
@@ -131,6 +139,6 @@ struct CreateProfileView: View {
 }
 
 #Preview {
-    CreateProfileView()
+    CreateProfileView(isBackButtonPresented: true)
         .environment(AuthViewModel())
 }

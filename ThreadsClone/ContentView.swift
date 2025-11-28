@@ -5,12 +5,18 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-            if authViewModel.isAuthenticated {
+            switch authViewModel.authState {
+            case .unknown:
+                ProgressView()
+            case .onboarded:
+                NavigationStack {
+                    CreateProfileView(isBackButtonPresented: false)
+                }
+            case .authenticated:
                 MainView()
-            } else {
+            case .unauthenticated:
                 NavigationStack {
                     SignInView()
-                    
                 }
             }
         }

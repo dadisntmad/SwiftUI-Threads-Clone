@@ -17,10 +17,16 @@ class AuthViewModel {
     var didSignUp = false
     var didOnboard = false
     var didSignIn = false
-    var isAuthenticated = false
+    var authState: AuthStateEnum = .unknown
     
     var isLoading: Bool {
         status == .loading
+    }
+    
+    init() {
+        Task {
+            await checkAuthState()
+        }
     }
     
     func signUp(email: String, password: String) async throws {
@@ -58,7 +64,7 @@ class AuthViewModel {
     }
     
     func onboardUser(fullName: String, bio: String, link: String, image: UIImage?) async {
-        guard let uid = fbUser?.uid else { return }
+        guard let uid = auth.currentUser?.uid else { return }
         
         let docRef = db.collection("users").document(uid)
         
@@ -79,12 +85,13 @@ class AuthViewModel {
             
             status = .loaded
             didOnboard = status != .error && status == .loaded
-            isAuthenticated = didOnboard
             
         } catch {
+            debugPrint("DEBUG: Error uploading user data: \(error.localizedDescription)")
             errMessage = error.localizedDescription
             didOnboard = false
             status = .error
+            authState = .unauthenticated
         }
     }
     
@@ -102,7 +109,7 @@ class AuthViewModel {
             
             status = .loaded
             didSignIn = status != .error && status == .loaded
-            isAuthenticated = didSignIn
+            authState = .authenticated
         } catch  {
             errMessage = error.localizedDescription
             didSignIn = false
@@ -115,7 +122,7 @@ class AuthViewModel {
             try auth.signOut()
             fbUser = nil
             user = nil
-            isAuthenticated = false
+            authState = .unauthenticated
         } catch {
             debugPrint("DEBUG: failed to sign out: \(error.localizedDescription)")
         }
@@ -133,6 +140,20 @@ class AuthViewModel {
         } catch  {
             debugPrint("DEBUG: Failed to get current user: \(error.localizedDescription)")
             return nil
+        }
+    }
+    
+    private func checkAuthState() async {
+        let uid = auth.currentUser?.uid
+        let user = await getCurrentUser()
+        let fullName = user?.fullName.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if let fullName, !fullName.isEmpty {
+            authState = .authenticated
+        } else if uid != nil {
+            authState = .onboarded
+        } else {
+            authState = .unauthenticated
         }
     }
 }
