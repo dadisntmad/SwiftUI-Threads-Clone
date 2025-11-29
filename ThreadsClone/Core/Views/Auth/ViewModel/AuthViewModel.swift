@@ -14,9 +14,6 @@ class AuthViewModel {
     
     var errMessage: String?
     
-    var didSignUp = false
-    var didOnboard = false
-    var didSignIn = false
     var authState: AuthStateEnum = .unknown
     
     var isLoading: Bool {
@@ -54,11 +51,10 @@ class AuthViewModel {
             try db.collection("users").document(fbUser.uid).setData(from: userModel)
             
             status = .loaded
-            didSignUp = status != .error && status == .loaded
+            authState = .needsOnboarding(uid: fbUser.uid)
             
         } catch {
             errMessage = error.localizedDescription
-            didSignUp = false
             status = .error
         }
     }
@@ -84,12 +80,13 @@ class AuthViewModel {
             ])
             
             status = .loaded
-            didOnboard = status != .error && status == .loaded
+            let user = await getCurrentUser()
+            self.user = user
+            authState = .authenticated
             
         } catch {
             debugPrint("DEBUG: Error uploading user data: \(error.localizedDescription)")
             errMessage = error.localizedDescription
-            didOnboard = false
             status = .error
             authState = .unauthenticated
         }
@@ -108,11 +105,9 @@ class AuthViewModel {
             self.user = user
             
             status = .loaded
-            didSignIn = status != .error && status == .loaded
             authState = .authenticated
         } catch  {
             errMessage = error.localizedDescription
-            didSignIn = false
             status = .error
         }
     }
@@ -144,16 +139,19 @@ class AuthViewModel {
     }
     
     private func checkAuthState() async {
-        let uid = auth.currentUser?.uid
+        guard let uid = auth.currentUser?.uid else {
+            authState = .unauthenticated
+            return
+        }
+        
         let user = await getCurrentUser()
         let fullName = user?.fullName.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if let fullName, !fullName.isEmpty {
+            self.user = user
             authState = .authenticated
-        } else if uid != nil {
-            authState = .onboarded
         } else {
-            authState = .unauthenticated
+            authState = .needsOnboarding(uid: uid)
         }
     }
 }

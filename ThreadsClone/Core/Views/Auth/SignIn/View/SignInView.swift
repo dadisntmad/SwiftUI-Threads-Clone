@@ -71,10 +71,6 @@ struct SignInView: View {
             }
             .padding(.top)
         }
-        .navigationDestination(isPresented: Binding(get: { authViewModel.didSignIn }, set: { authViewModel.didSignIn = $0 })) {
-            MainView()
-                .navigationBarBackButtonHidden()
-        }
         .toast(isPresenting: $showToast) {
             Toast.show(authViewModel.errMessage)
         }

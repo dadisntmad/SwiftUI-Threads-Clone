@@ -8,16 +8,17 @@ struct ContentView: View {
             switch authViewModel.authState {
             case .unknown:
                 ProgressView()
-            case .onboarded:
-                NavigationStack {
-                    CreateProfileView(isBackButtonPresented: false)
-                }
-            case .authenticated:
-                MainView()
             case .unauthenticated:
                 NavigationStack {
                     SignInView()
                 }
+            case .needsOnboarding:
+                NavigationStack {
+                    CreateProfileView(isBackButtonPresented: false)
+                        .navigationBarBackButtonHidden()
+                }
+            case .authenticated:
+                MainView()
             }
         }
         .environment(authViewModel)

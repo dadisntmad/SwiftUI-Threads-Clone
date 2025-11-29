@@ -128,10 +128,6 @@ struct CreateProfileView: View {
             }
             .scrollBounceBehavior(.basedOnSize)
         }
-        .navigationDestination(isPresented: Binding(get: { authViewModel.didOnboard }, set: { authViewModel.didOnboard = $0 })) {
-            MainView()
-                .navigationBarBackButtonHidden()
-        }
         .toast(isPresenting: $showToast) {
             Toast.show(authViewModel.errMessage)
         }

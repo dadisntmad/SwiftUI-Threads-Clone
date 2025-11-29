@@ -74,13 +74,6 @@ struct SignUpView: View {
             }
             .padding(.top)
         }
-        .navigationDestination(isPresented: Binding(
-            get: { authViewModel.didSignUp },
-            set: { authViewModel.didSignUp = $0 }
-        )) {
-            CreateProfileView()
-                .navigationBarBackButtonHidden()
-        }
         .toast(isPresenting: $showToast) {
             Toast.show(authViewModel.errMessage)
         }
