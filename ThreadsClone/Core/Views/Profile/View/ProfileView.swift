@@ -57,8 +57,13 @@ struct ProfileView: View {
                         }
                         .padding(.horizontal)
                         
-                        Button {
-                            
+                        NavigationLink {
+                            CreateProfileView(
+                                subtitle: "Update your Threads profile",
+                                buttonLabel: "Update",
+                                isUpdateProfileView: true
+                            )
+                            .navigationBarBackButtonHidden()
                         } label: {
                             Text("Edit Profile")
                                 .font(.subheadline)
@@ -122,4 +127,5 @@ struct ProfileView: View {
 
 #Preview {
     ProfileView()
+        .environment(AuthViewModel())
 }

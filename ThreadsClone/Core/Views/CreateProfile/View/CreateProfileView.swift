@@ -15,9 +15,20 @@ struct CreateProfileView: View {
     @State private var imagePickerService = ImagePickerService()
     
     let isBackButtonPresented: Bool
+    let subtitle: String
+    let buttonLabel: String
+    let isUpdateProfileView: Bool
     
-    init(isBackButtonPresented: Bool = true) {
+    init(
+        isBackButtonPresented: Bool = true,
+        subtitle: String = "Customize your Threads profile",
+        buttonLabel: String = "Next",
+        isUpdateProfileView: Bool = false
+    ) {
         self.isBackButtonPresented = isBackButtonPresented
+        self.subtitle = subtitle
+        self.buttonLabel = buttonLabel
+        self.isUpdateProfileView = isUpdateProfileView
     }
     
     var isDisabled: Bool {
@@ -35,7 +46,7 @@ struct CreateProfileView: View {
             ScrollView(showsIndicators: false) {
                 AuthTitle(
                     title: "Profile",
-                    subtitle: "Customize your Threads profile"
+                    subtitle: subtitle
                 )
                 
                 CustomForm {
@@ -74,8 +85,11 @@ struct CreateProfileView: View {
                                 
                             } else {
                                 PhotosPicker(selection: $imagePickerService.selectedImage) {
+                                    let imageUrl = authViewModel.user?.imageUrl
+                                    let isValidImageUrl = imageUrl != nil && !(imageUrl?.isEmpty ?? true)
+                                    
                                     ProfileImage(
-                                        imageUrl: nil,
+                                        imageUrl: isValidImageUrl ? imageUrl : nil,
                                         isMe: true,
                                         size: 48
                                     )
@@ -120,16 +134,36 @@ struct CreateProfileView: View {
                             }
                         }
                     },
-                    label: "Next",
+                    label: buttonLabel,
                     isLoading: authViewModel.isLoading,
                     isDisabled: isDisabled
                 )
                 .disabled(isDisabled)
+                
+                if isUpdateProfileView {
+                    Button(role: .destructive) {
+                        authViewModel.signOut()
+                    } label: {
+                        Text("Sign Out")
+                    }
+                    .padding(.top)
+                }
             }
             .scrollBounceBehavior(.basedOnSize)
         }
         .toast(isPresenting: $showToast) {
             Toast.show(authViewModel.errMessage)
+        }
+        .onAppear {
+            if !isUpdateProfileView {
+                return
+            }
+            
+            if let user = authViewModel.user {
+                name = user.fullName
+                bio = user.bio ?? ""
+                link = user.link ?? ""
+            }
         }
     }
 }
