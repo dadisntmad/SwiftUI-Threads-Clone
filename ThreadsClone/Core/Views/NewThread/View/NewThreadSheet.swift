@@ -42,7 +42,10 @@ struct NewThreadSheet: View {
                 
                 Button {
                     Task {
-                        await newThreadViewModel.createThread(text: threadText)
+                        await newThreadViewModel.createThread(
+                            text: threadText,
+                            images: selectedImages
+                        )
                     }
                 } label: {
                     Text("Post")

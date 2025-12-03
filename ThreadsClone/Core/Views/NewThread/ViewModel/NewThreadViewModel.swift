@@ -13,13 +13,30 @@ class NewThreadViewModel {
         status == .loading
     }
     
-    func createThread(text: String) async {
+    func createThread(text: String, images: [UIImage?]) async {
         guard let uid = auth.currentUser?.uid else { return }
         
         status = .loading
         
         let docRef = db.collection("threads").document()
         let newId = docRef.documentID
+        var imageUrls: [String] = []
+        
+        for img in images {
+            guard let imageToUpload = img else { return }
+            do {
+                let result = try await MediaUploaderService.upload(
+                    folderName: "threads",
+                    image: imageToUpload
+                )
+                
+                guard let result else { return }
+                
+                imageUrls.append(result)
+            } catch  {
+                debugPrint("DEBUG: Failed to upload an image")
+            }
+        }
         
         let threadModel = ThreadModel(
             id: newId,
@@ -27,7 +44,7 @@ class NewThreadViewModel {
             parentId: nil,
             authorId: uid,
             text: text,
-            imageUrls: [],
+            imageUrls: imageUrls,
             createdAt: .now,
             updatedAt: nil,
             likes: [],
