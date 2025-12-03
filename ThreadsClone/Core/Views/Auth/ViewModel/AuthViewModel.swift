@@ -20,6 +20,10 @@ class AuthViewModel {
         status == .loading
     }
     
+    var username: String {
+        user?.fullName.split(separator: " ").joined(separator: "_").lowercased() ?? ""
+    }
+    
     init() {
         Task {
             await checkAuthState()

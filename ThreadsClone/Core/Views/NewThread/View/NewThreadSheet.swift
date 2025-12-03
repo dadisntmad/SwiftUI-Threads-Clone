@@ -3,6 +3,7 @@ import PhotosUI
 
 struct NewThreadSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AuthViewModel.self) private var authViewModel
     
     @State private var threadText = ""
     @State private var isDialogPresented = false
@@ -10,6 +11,8 @@ struct NewThreadSheet: View {
     @State private var selectedItems: [PhotosPickerItem] = []
     @State private var selectedImages: [UIImage] = []
     @State private var selectedIndexForDeletion: Int?
+    
+    @State private var newThreadViewModel = NewThreadViewModel()
     
     @Binding var selectedTab: Int
     
@@ -38,14 +41,14 @@ struct NewThreadSheet: View {
                 Spacer()
                 
                 Button {
-                    selectedTab = 0
-                    dismiss()
-                    threadText = ""
+                    Task {
+                        await newThreadViewModel.createThread(text: threadText)
+                    }
                 } label: {
                     Text("Post")
                         .fontWeight(.semibold)
                 }
-                .disabled(!isAbleToPost)
+                .disabled(!isAbleToPost || newThreadViewModel.isLoading)
             }
             .padding()
             
@@ -53,14 +56,16 @@ struct NewThreadSheet: View {
                 .background(Colors.divider)
             
             HStack(alignment: .top, spacing: 14) {
+                let isValidImageUrl = authViewModel.user?.imageUrl != nil && authViewModel.user?.imageUrl != ""
+                
                 ProfileImage(
-                    imageUrl: "https://images.pexels.com/photos/32948745/pexels-photo-32948745.jpeg",
+                    imageUrl: isValidImageUrl ? authViewModel.user?.imageUrl : nil,
                     isMe: false,
                     size: 34
                 )
                 
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("username")
+                    Text(authViewModel.username)
                         .font(.subheadline)
                     
                     TextField(
@@ -120,9 +125,17 @@ struct NewThreadSheet: View {
                 }
             }
         }
+        .onChange(of: newThreadViewModel.status) { _, newValue in
+            if newValue == LoadingStatusEnum.loaded {
+                selectedTab = 0
+                dismiss()
+                threadText = ""
+            }
+        }
     }
 }
 
 #Preview {
     NewThreadSheet(selectedTab: .constant(0))
+        .environment(AuthViewModel())
 }
