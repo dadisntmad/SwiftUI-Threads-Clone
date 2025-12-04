@@ -20,7 +20,7 @@ struct ThreadActionButton: View {
                     .foregroundStyle(color ?? Colors.buttonBg)
             }
             
-            if let count = count {
+            if let count = count, count > 0 {
                 Text(String(count))
                     .font(.caption2)
                     .foregroundStyle(Colors.subtitle)

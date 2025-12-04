@@ -7,4 +7,8 @@ struct UserModel: Codable {
     let link: String?
     let followers: [String]
     let following: [String]
+    
+    var username: String {
+        fullName.split(separator: " ").joined(separator: "_").lowercased()
+    }
 }

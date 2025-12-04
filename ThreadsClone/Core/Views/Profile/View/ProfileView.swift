@@ -110,8 +110,8 @@ struct ProfileView: View {
                         .padding(.bottom)
                         
                         LazyVStack {
-                            ForEach(0..<25, id: \.self) { _ in
-                                ThreadContainer()
+                            ForEach(ThreadModel.data) { thread in
+                                ThreadContainer(thread: thread)
                                     .padding()
                                 
                                 Divider()

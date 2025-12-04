@@ -41,7 +41,7 @@ class NewThreadViewModel {
         let threadModel = ThreadModel(
             id: newId,
             threadId: newId,
-            parentId: nil,
+            parentId: "",
             authorId: uid,
             text: text,
             imageUrls: imageUrls,

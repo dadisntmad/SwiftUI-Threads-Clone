@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct FeedView: View {
+    @State private var feedViewModel = FeedViewModel()
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -8,8 +10,8 @@ struct FeedView: View {
                 
                 ScrollView(showsIndicators: false) {
                     LazyVStack(spacing: 0) {
-                        ForEach(0..<15) { _ in
-                            ThreadContainer()
+                        ForEach(feedViewModel.threads) { thread in
+                            ThreadContainer(thread: thread)
                                 .padding()
                             
                             Divider()

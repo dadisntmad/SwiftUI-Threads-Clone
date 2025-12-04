@@ -2,14 +2,12 @@ import SwiftUI
 import Kingfisher
 
 struct ThreadContainer: View {
+    @Environment(AuthViewModel.self) private var authViewModel
+    
     @State private var isLiked = false
     @State private var showHeart = false
     
-    private var images = [
-        "https://images.pexels.com/photos/34629969/pexels-photo-34629969.jpeg",
-        "https://images.pexels.com/photos/15112647/pexels-photo-15112647.jpeg",
-        "https://images.pexels.com/photos/30097108/pexels-photo-30097108.jpeg"
-    ]
+    let thread: ThreadModel
     
     private func toggleLike() {
         isLiked.toggle()
@@ -17,8 +15,11 @@ struct ThreadContainer: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
+            let imageUrl = thread.user?.imageUrl
+            let isImageUrlValid = imageUrl != nil && !(imageUrl?.isEmpty ?? false)
+            
             ProfileImage(
-                imageUrl: "https://images.pexels.com/photos/32948745/pexels-photo-32948745.jpeg",
+                imageUrl: isImageUrlValid ? imageUrl : nil,
                 isMe: false,
                 size: 36
             )
@@ -26,7 +27,7 @@ struct ThreadContainer: View {
             VStack(alignment: .leading) {
                 // author
                 HStack {
-                    Text("john.doe")
+                    Text(thread.user?.username ?? "")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     
@@ -46,15 +47,15 @@ struct ThreadContainer: View {
                 }
                 
                 // thread
-                Text("Let's talk about the incredible power of perseverance and how it can change your life. 🚀 ")
+                Text(thread.text)
                     .font(.body)
                     .padding(.bottom)
                 
-                if !images.isEmpty {
+                if !thread.imageUrls.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            ForEach(images, id: \.self) { imageUrl in
-                                KFImage(URL(string: imageUrl))
+                            ForEach(thread.imageUrls, id: \.self) { imageUrl in
+                                KFImage(URL(string: imageUrl ?? ""))
                                     .resizable()
                                     .aspectRatio(1.0, contentMode: .fill)
                                     .frame(width: 250, height: 300)
@@ -93,17 +94,19 @@ struct ThreadContainer: View {
                                     .offset(x: 0, y: isLiked ? 0 : -24)
                                     .opacity(isLiked ? 1 : 0)
                             }
-                            // TODO: only show if likes > 0
-                            Text(String(5))
-                                .font(.caption2)
-                                .foregroundStyle(Colors.subtitle)
+                            if !thread.likes.isEmpty {
+                                Text(String(5))
+                                    .font(.caption2)
+                                    .foregroundStyle(Colors.subtitle)
+                            }
+                            
                         }
                     }
                     
                     ThreadActionButton(
                         action: {},
                         icon: Icons.message,
-                        count: 10,
+                        count: thread.comments.count,
                         size: nil,
                         color: nil,
                     )
@@ -111,7 +114,7 @@ struct ThreadContainer: View {
                     ThreadActionButton(
                         action: {},
                         icon: Icons.repost,
-                        count: 7,
+                        count: thread.reposts.count,
                         size: 14,
                         color: nil,
                     )
@@ -130,5 +133,8 @@ struct ThreadContainer: View {
 }
 
 #Preview {
-    ThreadContainer()
+    ThreadContainer(
+        thread: ThreadModel.data[0]
+    )
+    .environment(AuthViewModel())
 }
