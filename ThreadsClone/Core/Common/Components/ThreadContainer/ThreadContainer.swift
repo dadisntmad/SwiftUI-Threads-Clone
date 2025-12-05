@@ -31,7 +31,7 @@ struct ThreadContainer: View {
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     
-                    Text("31/10/2025")
+                    Text(thread.createdAt.formatThreadDate())
                         .font(.caption)
                         .foregroundColor(Colors.subtitle)
                     
@@ -95,11 +95,10 @@ struct ThreadContainer: View {
                                     .opacity(isLiked ? 1 : 0)
                             }
                             if !thread.likes.isEmpty {
-                                Text(String(5))
+                                Text(String(thread.likes.count))
                                     .font(.caption2)
                                     .foregroundStyle(Colors.subtitle)
                             }
-                            
                         }
                     }
                     
