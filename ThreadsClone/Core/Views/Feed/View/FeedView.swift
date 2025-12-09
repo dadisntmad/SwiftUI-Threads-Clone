@@ -11,8 +11,14 @@ struct FeedView: View {
                 ScrollView(showsIndicators: false) {
                     LazyVStack(spacing: 0) {
                         ForEach(feedViewModel.threads) { thread in
-                            ThreadContainer(thread: thread)
-                                .padding()
+                            NavigationLink {
+                                ThreadDetailsView(thread: thread)
+                                    .navigationBarBackButtonHidden()
+                            } label: {
+                                ThreadContainer(thread: thread)
+                                    .padding()
+                                    .tint(Colors.tintColor)
+                            }
                             
                             Divider()
                         }
@@ -25,4 +31,5 @@ struct FeedView: View {
 
 #Preview {
     FeedView()
+        .environment(AuthViewModel())
 }
