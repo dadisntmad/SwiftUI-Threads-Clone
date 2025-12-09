@@ -4,23 +4,27 @@ struct FeedView: View {
     @State private var feedViewModel = FeedViewModel()
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                Logo(size: 28)
-                
-                ScrollView(showsIndicators: false) {
-                    LazyVStack(spacing: 0) {
-                        ForEach(feedViewModel.threads) { thread in
-                            NavigationLink {
-                                ThreadDetailsView(thread: thread)
-                                    .navigationBarBackButtonHidden()
-                            } label: {
-                                ThreadContainer(thread: thread)
-                                    .padding()
-                                    .tint(Colors.tintColor)
+        if feedViewModel.isLoading {
+            ProgressView()
+        } else {
+            NavigationStack {
+                VStack {
+                    Logo(size: 28)
+                    
+                    ScrollView(showsIndicators: false) {
+                        LazyVStack(spacing: 0) {
+                            ForEach(feedViewModel.threads) { thread in
+                                NavigationLink {
+                                    ThreadDetailsView(thread: thread)
+                                        .navigationBarBackButtonHidden()
+                                } label: {
+                                    ThreadContainer(thread: thread)
+                                        .padding()
+                                        .tint(Colors.tintColor)
+                                }
+                                
+                                Divider()
                             }
-                            
-                            Divider()
                         }
                     }
                 }
