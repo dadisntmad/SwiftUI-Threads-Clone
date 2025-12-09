@@ -3,6 +3,8 @@ import SwiftUI
 struct ThreadDetailsView: View {
     @State private var threadText = ""
     
+    @State private var threadDetailsViewModel = ThreadDetailsViewModel()
+    
     let thread: ThreadModel
     
     var body: some View {
@@ -39,7 +41,17 @@ struct ThreadDetailsView: View {
                 .padding([.horizontal, .bottom], 12)
                 .submitLabel(.send)
                 .onSubmit {
+                    guard !threadText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
                     
+                    Task {
+                        try await threadDetailsViewModel.reply(
+                            threadId: thread.id,
+                            parentId: thread.id,
+                            text: threadText
+                        )
+                    }
+                    
+                    threadText = ""
                 }
         }
     }
