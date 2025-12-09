@@ -23,9 +23,15 @@ struct ThreadDetailsView: View {
                 }
                 
                 LazyVStack {
-                    ForEach(0..<25) { _ in
-                        ThreadContainer(thread: thread)
-                            .padding()
+                    ForEach(threadDetailsViewModel.replies) { reply in
+                        NavigationLink {
+                            ThreadDetailsView(thread: reply)
+                                .navigationBarBackButtonHidden()
+                        } label: {
+                            ThreadContainer(thread: reply)
+                                .padding()
+                        }
+                        .tint(Colors.tintColor)
                         
                         Divider()
                             .background(Colors.divider)
@@ -49,10 +55,13 @@ struct ThreadDetailsView: View {
                             parentId: thread.id,
                             text: threadText
                         )
+                        
+                        threadText = ""
                     }
-                    
-                    threadText = ""
                 }
+        }
+        .onAppear {
+            threadDetailsViewModel.getReplies(threadId: thread.id)
         }
     }
 }
