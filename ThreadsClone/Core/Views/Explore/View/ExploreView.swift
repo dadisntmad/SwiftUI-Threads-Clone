@@ -47,7 +47,7 @@ struct ExploreView: View {
                                             await exploreViewModel.toggleFollow(for: user.uid)
                                         }
                                     },
-                                    label: (exploreViewModel.isFollowing[user.uid] ?? false) ? "Unfollow" : "Follow"
+                                    label: "Follow"
                                 )
                             }
                             .padding(.horizontal)

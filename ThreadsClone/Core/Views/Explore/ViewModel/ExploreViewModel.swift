@@ -9,7 +9,6 @@ class ExploreViewModel {
     
     var users: [UserModel] = []
     var usersStatus: LoadingStatusEnum = .unknown
-    var isFollowing: [String: Bool] = [:]
     
     var usersLoading: Bool {
         usersStatus == .loading
@@ -24,22 +23,13 @@ class ExploreViewModel {
         
         do {
             let ref = db.collection("users").document(documentId)
-            let user = try await ref.getDocument(as: UserModel.self)
-            let followers = user.followers
             
-            if followers.contains(uid) {
-                isFollowing[documentId] = false
-                
-                try await ref.updateData([
-                    "followers": FieldValue.arrayRemove([uid])
-                ])
-            } else {
-                isFollowing[documentId] = true
-                
-                try await ref.updateData([
-                    "followers": FieldValue.arrayUnion([uid])
-                ])
-            }
+            try await ref.updateData([
+                "followers": FieldValue.arrayUnion([uid])
+            ])
+            
+            users.removeAll(where: { $0.uid == documentId })
+            
         } catch {
             debugPrint("DEBUG: Failed to follow / unfollow the user: \(error.localizedDescription)")
         }
@@ -53,22 +43,17 @@ class ExploreViewModel {
         do {
             let snap = try await db.collection("users").getDocuments()
             
-            if snap.isEmpty || snap.documents.isEmpty { return }
-            
-            for doc in snap.documents {
-                let data = try doc.data(as: UserModel.self)
-                let followers = data.followers
-                // skip the current and following users
-                if uid != doc.documentID && !(followers.contains(uid)) {
-                    users.append(data)
-                }
+            users = snap.documents.compactMap { doc in
+                let user = try? doc.data(as: UserModel.self)
+                guard let user, user.id != uid, !user.followers.contains(uid) else { return nil }
+                return user
             }
             
             usersStatus = .loaded
-            
         } catch {
             debugPrint("DEBUG: Failed to fetch users: \(error.localizedDescription)")
             usersStatus = .error
         }
     }
+    
 }
