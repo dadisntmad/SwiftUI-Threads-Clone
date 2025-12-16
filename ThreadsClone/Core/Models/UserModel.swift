@@ -1,4 +1,4 @@
-struct UserModel: Codable {
+struct UserModel: Codable, Identifiable {
     let uid: String
     let email: String
     let fullName: String
@@ -7,6 +7,8 @@ struct UserModel: Codable {
     let link: String?
     let followers: [String]
     let following: [String]
+    
+    var id: String { uid }
     
     var username: String {
         fullName.split(separator: " ").joined(separator: "_").lowercased()

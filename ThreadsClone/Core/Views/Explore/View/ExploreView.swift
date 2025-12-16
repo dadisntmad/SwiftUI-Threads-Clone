@@ -2,32 +2,35 @@ import SwiftUI
 
 struct ExploreView: View {
     @State private var searchText = ""
+    @State private var exploreViewModel = ExploreViewModel()
     
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                ForEach(0..<15) { _ in
-                    VStack {
+                LazyVStack {
+                    ForEach(exploreViewModel.users) { user in
                         HStack {
                             HStack(alignment: .top, spacing: 16) {
+                                let isValid = user.imageUrl != nil && !(user.imageUrl?.isEmpty ?? false)
+                                
                                 ProfileImage(
-                                    imageUrl: "https://images.pexels.com/photos/32948745/pexels-photo-32948745.jpeg",
+                                    imageUrl: isValid ? user.imageUrl : nil,
                                     isMe: false,
                                     size: 36
                                 )
                                 
                                 VStack(alignment: .leading, spacing: 0) {
-                                    Text("john.doe")
+                                    Text(user.username)
                                         .font(.subheadline)
                                         .fontWeight(.semibold)
                                         .lineLimit(1)
                                     
-                                    Text("John Doe")
+                                    Text(user.fullName)
                                         .font(.caption)
                                         .foregroundStyle(Colors.subtitle)
                                         .padding(.bottom, 4)
                                     
-                                    Text("1k Followers")
+                                    Text("\(user.followers.count) Followers")
                                         .font(.footnote)
                                 }
                                 .lineLimit(1)
@@ -45,6 +48,7 @@ struct ExploreView: View {
                     }
                 }
             }
+            .scrollBounceBehavior(.basedOnSize)
             .navigationTitle("Search")
             .searchable(text: $searchText, prompt: "Search")
         }
