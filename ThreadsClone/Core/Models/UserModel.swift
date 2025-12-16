@@ -13,4 +13,12 @@ struct UserModel: Codable, Identifiable {
     var username: String {
         fullName.split(separator: " ").joined(separator: "_").lowercased()
     }
+    
+    var followersCount: Int {
+        followers.count
+    }
+    
+    var followingCount: Int {
+        following.count
+    }
 }

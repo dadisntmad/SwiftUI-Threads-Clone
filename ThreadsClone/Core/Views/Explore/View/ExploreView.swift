@@ -6,51 +6,62 @@ struct ExploreView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView(showsIndicators: false) {
-                LazyVStack {
-                    ForEach(exploreViewModel.users) { user in
-                        HStack {
-                            HStack(alignment: .top, spacing: 16) {
-                                let isValid = user.imageUrl != nil && !(user.imageUrl?.isEmpty ?? false)
-                                
-                                ProfileImage(
-                                    imageUrl: isValid ? user.imageUrl : nil,
-                                    isMe: false,
-                                    size: 36
-                                )
-                                
-                                VStack(alignment: .leading, spacing: 0) {
-                                    Text(user.username)
-                                        .font(.subheadline)
-                                        .fontWeight(.semibold)
-                                        .lineLimit(1)
+            if exploreViewModel.usersLoading {
+                ProgressView()
+            } else {
+                ScrollView(showsIndicators: false) {
+                    LazyVStack {
+                        ForEach(exploreViewModel.users) { user in
+                            HStack {
+                                HStack(alignment: .top, spacing: 16) {
+                                    let isValid = user.imageUrl != nil && !(user.imageUrl?.isEmpty ?? false)
                                     
-                                    Text(user.fullName)
-                                        .font(.caption)
-                                        .foregroundStyle(Colors.subtitle)
-                                        .padding(.bottom, 4)
+                                    ProfileImage(
+                                        imageUrl: isValid ? user.imageUrl : nil,
+                                        isMe: false,
+                                        size: 36
+                                    )
                                     
-                                    Text("\(user.followers.count) Followers")
-                                        .font(.footnote)
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Text(user.username)
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .lineLimit(1)
+                                        
+                                        Text(user.fullName)
+                                            .font(.caption)
+                                            .foregroundStyle(Colors.subtitle)
+                                            .padding(.bottom, 4)
+                                        
+                                        Text("\(user.followersCount) \(user.followersCount == 1 ? "Follower" : "Followers")")
+                                            .font(.footnote)
+                                    }
+                                    .lineLimit(1)
                                 }
-                                .lineLimit(1)
+                                
+                                Spacer()
+                                
+                                BorderedButton(
+                                    action: {
+                                        Task {
+                                            await exploreViewModel.toggleFollow(for: user.uid)
+                                        }
+                                    },
+                                    label: (exploreViewModel.isFollowing[user.uid] ?? false) ? "Unfollow" : "Follow"
+                                )
                             }
+                            .padding(.horizontal)
+                            .padding(.vertical, 4)
                             
-                            Spacer()
-                            
-                            BorderedButton(action: {}, label: "Follow")
+                            Divider()
+                                .padding(.leading, 70)
                         }
-                        .padding(.horizontal)
-                        .padding(.vertical, 4)
-                        
-                        Divider()
-                            .padding(.leading, 70)
                     }
                 }
+                .scrollBounceBehavior(.basedOnSize)
+                .navigationTitle("Search")
+                .searchable(text: $searchText, prompt: "Search")
             }
-            .scrollBounceBehavior(.basedOnSize)
-            .navigationTitle("Search")
-            .searchable(text: $searchText, prompt: "Search")
         }
     }
 }
