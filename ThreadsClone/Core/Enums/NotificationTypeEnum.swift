@@ -1,5 +1,5 @@
-enum NotificationTypeEnum {
+enum NotificationTypeEnum: Codable {
     case reply
-    case mention
+    case like
     case follow
 }

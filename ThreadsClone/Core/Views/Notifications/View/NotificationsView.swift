@@ -1,47 +1,70 @@
 import SwiftUI
 
 struct NotificationsView: View {
+    @State private var notificationsViewModel = NotificationsViewModel()
+    
     var body: some View {
         NavigationStack {
-            ScrollView(showsIndicators: false) {
-                ForEach(0..<25) { _ in
-                    VStack {
-                        HStack(spacing: 16) {
-                            ProfileImage(
-                                imageUrl: "https://images.pexels.com/photos/32948745/pexels-photo-32948745.jpeg",
-                                isMe: false,
-                                size: 36
-                            )
-                            
-                            VStack(alignment: .leading) {
-                                HStack(spacing: 4) {
-                                    Text("username")
-                                        .font(.subheadline)
-                                        .fontWeight(.semibold)
+            if notificationsViewModel.isLoading {
+                ProgressView()
+            } else {
+                if notificationsViewModel.notifications.isEmpty {
+                    Text("You don't have any notifications".capitalized)
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .frame(maxHeight: .infinity, alignment: .center)
+                }
+                
+                ScrollView(showsIndicators: false) {
+                    ForEach(notificationsViewModel.notifications) { notification in
+                        VStack {
+                            HStack(spacing: 16) {
+                                let imageUrl = notification.user?.imageUrl
+                                let isImageUrlValid = imageUrl != nil && !(imageUrl?.isEmpty ?? false)
+                                
+                                ProfileImage(
+                                    imageUrl: isImageUrlValid ? imageUrl : nil,
+                                    isMe: false,
+                                    size: 36
+                                )
+                                
+                                VStack(alignment: .leading) {
+                                    let username = notification.user?.username ?? "unknown user"
                                     
-                                    Text("5m")
-                                        .font(.caption2)
+                                    HStack(spacing: 4) {
+                                        Text(username)
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                        
+                                        Text(notification.createdAt.formatThreadDate())
+                                            .font(.caption2)
+                                            .foregroundStyle(Colors.subtitle)
+                                    }
+                                    
+                                    Text("\(username) \(notification.message)")
+                                        .font(.subheadline)
                                         .foregroundStyle(Colors.subtitle)
                                 }
+                                Spacer()
                                 
-                                Text("Notification status")
-                                    .font(.subheadline)
-                                    .foregroundStyle(Colors.subtitle)
+                                if notification.type == .follow {
+                                    BorderedButton(
+                                        action: {},
+                                        label: "Follow"
+                                    )
+                                }
                             }
-                            Spacer()
-                            // TODO: show only if notification status is follows
-                            BorderedButton(action: {}, label: "Follow")
+                            .padding(.horizontal)
+                            
+                            Divider()
+                                .padding(.leading)
+                                .padding(.leading, 52)
+                                .background(Colors.divider)
                         }
-                        .padding(.horizontal)
-                        
-                        Divider()
-                            .padding(.leading)
-                            .padding(.leading, 52)
-                            .background(Colors.divider)
                     }
                 }
+                .navigationTitle("Activity")
             }
-            .navigationTitle("Activity")
         }
     }
 }
