@@ -52,6 +52,7 @@ struct ThreadDetailsView: View {
                     Task {
                         try await threadDetailsViewModel.reply(
                             threadId: thread.id,
+                            receiverId: thread.user?.uid ?? "",
                             parentId: thread.id,
                             text: threadText
                         )

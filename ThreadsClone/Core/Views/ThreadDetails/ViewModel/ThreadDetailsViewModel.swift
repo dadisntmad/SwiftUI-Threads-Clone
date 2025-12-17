@@ -15,11 +15,13 @@ class ThreadDetailsViewModel {
         status == .loading
     }
     
-    func reply(threadId: String, parentId: String?, text: String) async throws {
+    func reply(threadId: String, receiverId: String, parentId: String?, text: String) async throws {
         guard let uid = auth.currentUser?.uid else { return }
         
         let ref = db.collection("threads").document()
+        let notificationRef = db.collection("notifications").document()
         let newId = ref.documentID
+        let notificationId = notificationRef.documentID
         
         let newThread = ThreadModel(
             id: newId,
@@ -37,6 +39,22 @@ class ThreadDetailsViewModel {
         
         do {
             try ref.setData(from: newThread)
+            
+            try await db.collection("threads")
+                .document(threadId)
+                .updateData(["comments": FieldValue.arrayUnion([uid])])
+            
+            let notificationModel = NotificationModel(
+                notificationId: notificationId,
+                threadId: threadId,
+                authorId: uid,
+                receiverId: [receiverId],
+                createdAt: .now,
+                type: .reply
+            )
+            
+            try notificationRef.setData(from: notificationModel)
+            
         } catch {
             debugPrint("DEBUG: Failed to reply: \(error.localizedDescription)")
         }

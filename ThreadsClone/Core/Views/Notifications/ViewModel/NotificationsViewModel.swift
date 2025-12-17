@@ -25,7 +25,10 @@ class NotificationsViewModel {
         guard let uid = auth.currentUser?.uid else { return }
         
         do {
-            let snap = try await db.collection("notifications").whereField("receiverId", arrayContains: [uid]).getDocuments()
+            let snap = try await db.collection("notifications")
+                .whereField("receiverId", arrayContains: uid)
+                .order(by: "createdAt", descending: true)
+                .getDocuments()
             
             if snap.isEmpty || snap.documents.isEmpty {
                 status = .loaded

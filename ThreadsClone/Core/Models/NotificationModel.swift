@@ -5,7 +5,6 @@ struct NotificationModel: Codable, Identifiable {
     let threadId: String
     let authorId: String
     let receiverId: [String]
-    let title: String
     let createdAt: Date
     let type: NotificationTypeEnum
     
@@ -21,6 +20,8 @@ struct NotificationModel: Codable, Identifiable {
             "liked your thread"
         case .follow:
             "followed you"
+        case .unknown:
+            "sent you a notification"
         }
     }
 }
