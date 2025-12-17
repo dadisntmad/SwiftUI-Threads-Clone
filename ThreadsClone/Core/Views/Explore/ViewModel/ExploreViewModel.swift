@@ -23,10 +23,27 @@ class ExploreViewModel {
         
         do {
             let ref = db.collection("users").document(documentId)
+            let notificationRef = db.collection("notifications").document()
+            let notificationId = notificationRef.documentID
+            
+            try await db.collection("users").document(uid).updateData([
+                "following": FieldValue.arrayUnion([documentId])
+            ])
             
             try await ref.updateData([
                 "followers": FieldValue.arrayUnion([uid])
             ])
+            
+            let notificationModel = NotificationModel(
+                notificationId: notificationId,
+                threadId: "",
+                authorId: uid,
+                receiverId: [documentId],
+                createdAt: .now,
+                type: .follow
+            )
+            
+            try notificationRef.setData(from: notificationModel)
             
             users.removeAll(where: { $0.uid == documentId })
             
