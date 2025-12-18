@@ -2,11 +2,11 @@ import SwiftUI
 
 struct ProfileView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(AuthViewModel.self) private var authViewModel
     
     @State private var selectedSection: ProfileSectionEnum = .threads
     
     @Namespace private var animation
-    
     
     var body: some View {
         NavigationStack {
@@ -16,25 +16,31 @@ struct ProfileView: View {
                     VStack {
                         HStack(alignment: .top) {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Full Name")
+                                Text(authViewModel.user?.fullName ?? "")
                                     .font(.title)
                                     .bold()
                                 
-                                Text("username")
+                                Text(authViewModel.username)
                                     .fontWeight(.medium)
                                 
-                                Text("Passionate about art, photography, and all things creative 🎨✨")
+                                if let bio = authViewModel.user?.bio {
+                                    Text(bio)
+                                }
                                 
-                                Text("https://www.google.com/")
-                                    .font(.footnote)
-                                
+                                if let link = authViewModel.user?.link,
+                                   let url = URL(string: link) {
+
+                                    Link(link, destination: url)
+                                        .font(.footnote)
+                                        .foregroundStyle(.blue)
+                                }
                             }
                             .font(.body)
                             
                             Spacer()
                             
                             ProfileImage(
-                                imageUrl: "https://images.pexels.com/photos/32948745/pexels-photo-32948745.jpeg",
+                                imageUrl: (authViewModel.user?.isImageUrlValid ?? false) ? authViewModel.user?.imageUrl : nil,
                                 isMe: false,
                                 size: 64
                             )
@@ -42,9 +48,11 @@ struct ProfileView: View {
                         .padding()
                         
                         HStack {
-                            Text("10 Followers")
-                                .font(.caption)
-                                .foregroundStyle(Colors.subtitle)
+                            if let followersCount = authViewModel.user?.followersCount {
+                                Text(String(followersCount))
+                                    .font(.caption)
+                                    .foregroundStyle(Colors.subtitle)
+                            }
                             
                             Spacer()
                             

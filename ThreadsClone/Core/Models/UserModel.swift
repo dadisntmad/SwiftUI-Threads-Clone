@@ -21,4 +21,8 @@ struct UserModel: Codable, Identifiable {
     var followingCount: Int {
         following.count
     }
+    
+    var isImageUrlValid: Bool {
+        imageUrl != nil && !(imageUrl?.isEmpty ?? false)
+    }
 }
