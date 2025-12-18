@@ -48,9 +48,15 @@ struct NotificationsView: View {
                                 Spacer()
                                 
                                 if notification.type == .follow {
+                                    let isFollowing = notificationsViewModel.followingStatus[notification.authorId] ?? false
+                                    
                                     BorderedButton(
-                                        action: {},
-                                        label: "Follow"
+                                        action: {
+                                            Task {
+                                                await notificationsViewModel.toggleFollow(for: notification.authorId)
+                                            }
+                                        },
+                                        label: isFollowing ? "Unfollow" : "Follow",
                                     )
                                 }
                             }
