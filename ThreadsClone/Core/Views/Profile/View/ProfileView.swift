@@ -5,6 +5,7 @@ struct ProfileView: View {
     @Environment(AuthViewModel.self) private var authViewModel
     
     @State private var selectedSection: ProfileSectionEnum = .threads
+    @State private var profileViewModel = ProfileViewModel()
     
     @Namespace private var animation
     
@@ -29,7 +30,7 @@ struct ProfileView: View {
                                 
                                 if let link = authViewModel.user?.link,
                                    let url = URL(string: link) {
-
+                                    
                                     Link(link, destination: url)
                                         .font(.footnote)
                                         .foregroundStyle(.blue)
@@ -49,7 +50,7 @@ struct ProfileView: View {
                         
                         HStack {
                             if let followersCount = authViewModel.user?.followersCount {
-                                Text(String(followersCount))
+                                Text("\(followersCount == 1 ? "1 follower" : "\(followersCount) followers")")
                                     .font(.caption)
                                     .foregroundStyle(Colors.subtitle)
                             }
@@ -118,17 +119,43 @@ struct ProfileView: View {
                         .padding(.bottom)
                         
                         LazyVStack {
-                            ForEach(ThreadModel.data) { thread in
-                                ThreadContainer(thread: thread)
-                                    .padding()
-                                
-                                Divider()
-                                    .background(Colors.divider)
+                            let threads = getThreadsForSelectedSection()
+                            
+                            if threads.isEmpty {
+                                Text(getEmptyMessage())
+                                    .frame(maxWidth: .infinity)
+                                    .multilineTextAlignment(.center)
+                            } else {
+                                ForEach(threads) { thread in
+                                    ThreadContainer(thread: thread)
+                                        .padding()
+                                    
+                                    Divider()
+                                        .background(Colors.divider)
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+    
+    private func getThreadsForSelectedSection() -> [ThreadModel] {
+        switch selectedSection {
+        case .threads: return profileViewModel.ownThreads
+        case .replies: return profileViewModel.replies
+        case .media: return profileViewModel.media
+        case .reposts: return profileViewModel.reposts
+        }
+    }
+    
+    private func getEmptyMessage() -> String {
+        switch selectedSection {
+        case .threads: return "No threads yet."
+        case .replies: return "No replies yet."
+        case .media: return "No media yet."
+        case .reposts: return "No reposts yet."
         }
     }
 }
