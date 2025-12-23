@@ -67,7 +67,9 @@ class ThreadDetailsViewModel {
             .whereField("threadId", isEqualTo: threadId)
             .whereField("parentId", isNotEqualTo: "")
             .order(by: "createdAt", descending: true)
-            .addSnapshotListener { snap, err in
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+                
                 if let err = err {
                     print("Failed: \(err.localizedDescription)")
                     self.status = .error
@@ -76,22 +78,18 @@ class ThreadDetailsViewModel {
                 
                 guard let docs = snap?.documents else { return }
                 
-                self.replies.removeAll()
-                
-                for doc in docs {
-                    do {
-                        let thread = try doc.data(as: ThreadModel.self)
-                        self.replies.append(thread)
-                    } catch {
-                        print("Decoding error: \(error.localizedDescription)")
-                    }
+                self.replies = docs.compactMap {
+                    try? $0.data(as: ThreadModel.self)
                 }
                 
                 Task {
-                    try await self.getRepliesData()
+                    do {
+                        try await self.getRepliesData()
+                        self.status = .loaded
+                    } catch {
+                        self.status = .error
+                    }
                 }
-                
-                self.status = .loaded
             }
     }
     

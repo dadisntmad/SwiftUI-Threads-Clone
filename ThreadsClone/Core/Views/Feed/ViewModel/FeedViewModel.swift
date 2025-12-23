@@ -23,8 +23,10 @@ class FeedViewModel {
         db.collection("threads")
             .whereField("parentId", isEqualTo: "")
             .order(by: "createdAt", descending: true)
-            .addSnapshotListener { snap, err in
-                if let err = err {
+            .addSnapshotListener { [weak self] snap, err in
+                guard let self else { return }
+                
+                if let err {
                     print("Failed: \(err.localizedDescription)")
                     self.status = .error
                     return
@@ -32,25 +34,20 @@ class FeedViewModel {
                 
                 guard let docs = snap?.documents else { return }
                 
-                self.threads.removeAll()
-                
-                for doc in docs {
-                    do {
-                        let thread = try doc.data(as: ThreadModel.self)
-                        self.threads.append(thread)
-                    } catch {
-                        print("Decoding error: \(error.localizedDescription)")
-                    }
+                self.threads = docs.compactMap {
+                    try? $0.data(as: ThreadModel.self)
                 }
                 
                 Task {
-                    try await self.getUserThreadData()
+                    do {
+                        try await self.getUserThreadData()
+                        self.status = .loaded
+                    } catch {
+                        self.status = .error
+                    }
                 }
-                
-                self.status = .loaded
             }
     }
-    
     
     private func getUserThreadData() async throws {
         for i in 0..<threads.count {
