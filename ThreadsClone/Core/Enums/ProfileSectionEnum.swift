@@ -4,6 +4,24 @@ enum ProfileSectionEnum: Int, CaseIterable, Identifiable {
     case media
     case reposts
     
+    func threads(from provider: ThreadsProvider) -> [ThreadModel] {
+        switch self {
+        case .threads: return provider.ownThreads
+        case .replies: return provider.replies
+        case .media: return provider.media
+        case .reposts: return provider.reposts
+        }
+    }
+    
+    func placeholder() -> String {
+        switch self {
+        case .threads: return "No threads yet."
+        case .replies: return "No replies yet."
+        case .media: return "No media yet."
+        case .reposts: return "No reposts yet."
+        }
+    }
+    
     var title: String {
         switch self {
         case .threads: return "Threads"

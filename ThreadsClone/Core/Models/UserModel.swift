@@ -25,4 +25,15 @@ struct UserModel: Codable, Identifiable {
     var isImageUrlValid: Bool {
         imageUrl != nil && !(imageUrl?.isEmpty ?? false)
     }
+    
+    static var testUser = UserModel(
+        uid: "123",
+        email: "test@gmail.com",
+        fullName: "First Last",
+        imageUrl: nil,
+        bio: "my bio",
+        link: "https://www.google.com/",
+        followers: [],
+        following: []
+    )
 }

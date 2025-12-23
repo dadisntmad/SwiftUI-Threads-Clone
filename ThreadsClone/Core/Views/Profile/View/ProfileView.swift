@@ -119,10 +119,10 @@ struct ProfileView: View {
                         .padding(.bottom)
                         
                         LazyVStack {
-                            let threads = getThreadsForSelectedSection()
+                            let threads = selectedSection.threads(from: profileViewModel)
                             
                             if threads.isEmpty {
-                                Text(getEmptyMessage())
+                                Text(selectedSection.placeholder())
                                     .frame(maxWidth: .infinity)
                                     .multilineTextAlignment(.center)
                             } else {
@@ -138,24 +138,6 @@ struct ProfileView: View {
                     }
                 }
             }
-        }
-    }
-    
-    private func getThreadsForSelectedSection() -> [ThreadModel] {
-        switch selectedSection {
-        case .threads: return profileViewModel.ownThreads
-        case .replies: return profileViewModel.replies
-        case .media: return profileViewModel.media
-        case .reposts: return profileViewModel.reposts
-        }
-    }
-    
-    private func getEmptyMessage() -> String {
-        switch selectedSection {
-        case .threads: return "No threads yet."
-        case .replies: return "No replies yet."
-        case .media: return "No media yet."
-        case .reposts: return "No reposts yet."
         }
     }
 }

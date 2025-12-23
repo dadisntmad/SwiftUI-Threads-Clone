@@ -12,46 +12,52 @@ struct ExploreView: View {
                 ScrollView(showsIndicators: false) {
                     LazyVStack {
                         ForEach(exploreViewModel.users) { user in
-                            HStack {
-                                HStack(alignment: .top, spacing: 16) {
-                                    let isValid = user.imageUrl != nil && !(user.imageUrl?.isEmpty ?? false)
-                                    
-                                    ProfileImage(
-                                        imageUrl: isValid ? user.imageUrl : nil,
-                                        isMe: false,
-                                        size: 36
-                                    )
-                                    
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        Text(user.username)
-                                            .font(.subheadline)
-                                            .fontWeight(.semibold)
-                                            .lineLimit(1)
+                            NavigationLink {
+                                UserProfileView(user: user)
+                                    .navigationBarBackButtonHidden()
+                            } label: {
+                                HStack {
+                                    HStack(alignment: .top, spacing: 16) {
+                                        let isValid = user.imageUrl != nil && !(user.imageUrl?.isEmpty ?? false)
                                         
-                                        Text(user.fullName)
-                                            .font(.caption)
-                                            .foregroundStyle(Colors.subtitle)
-                                            .padding(.bottom, 4)
+                                        ProfileImage(
+                                            imageUrl: isValid ? user.imageUrl : nil,
+                                            isMe: false,
+                                            size: 36
+                                        )
                                         
-                                        Text("\(user.followersCount) \(user.followersCount == 1 ? "Follower" : "Followers")")
-                                            .font(.footnote)
-                                    }
-                                    .lineLimit(1)
-                                }
-                                
-                                Spacer()
-                                
-                                BorderedButton(
-                                    action: {
-                                        Task {
-                                            await exploreViewModel.toggleFollow(for: user.uid)
+                                        VStack(alignment: .leading, spacing: 0) {
+                                            Text(user.username)
+                                                .font(.subheadline)
+                                                .fontWeight(.semibold)
+                                                .lineLimit(1)
+                                            
+                                            Text(user.fullName)
+                                                .font(.caption)
+                                                .foregroundStyle(Colors.subtitle)
+                                                .padding(.bottom, 4)
+                                            
+                                            Text("\(user.followersCount) \(user.followersCount == 1 ? "Follower" : "Followers")")
+                                                .font(.footnote)
                                         }
-                                    },
-                                    label: "Follow"
-                                )
+                                        .lineLimit(1)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    BorderedButton(
+                                        action: {
+                                            Task {
+                                                await exploreViewModel.toggleFollow(for: user.uid)
+                                            }
+                                        },
+                                        label: "Follow"
+                                    )
+                                }
+                                .tint(Colors.tintColor)
+                                .padding(.horizontal)
+                                .padding(.vertical, 4)
                             }
-                            .padding(.horizontal)
-                            .padding(.vertical, 4)
                             
                             Divider()
                                 .padding(.leading, 70)
