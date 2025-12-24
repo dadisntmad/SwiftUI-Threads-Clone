@@ -8,6 +8,8 @@ struct BackButton: View {
             dismiss()
         } label: {
             Image(Icons.chevronLeft)
+                .renderingMode(.template)
+                .foregroundStyle(Colors.tintColor)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading)
