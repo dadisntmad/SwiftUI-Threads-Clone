@@ -6,6 +6,7 @@ struct Logo: View {
     var body: some View {
         Image(Icons.logo)
             .resizable()
+            .renderingMode(.template)
             .scaledToFill()
             .frame(width: size, height: size)
     }
