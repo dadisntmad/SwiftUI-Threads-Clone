@@ -93,6 +93,58 @@ class ThreadDetailsViewModel {
             }
     }
     
+    func toggleLike(thread: ThreadModel) async {
+        guard let uid = auth.currentUser?.uid else { return }
+        do {
+            let threadRef = db.collection("threads").document(thread.id)
+            let notificationRef = db.collection("notifications").document()
+            let likes = thread.likes
+            
+            let notificationModel = NotificationModel(
+                notificationId: notificationRef.documentID,
+                threadId: thread.id,
+                authorId: uid,
+                receiverId: [thread.authorId],
+                createdAt: .now,
+                type: .like
+            )
+            
+            if likes.contains(uid) {
+                try await threadRef.updateData([
+                    "likes": FieldValue.arrayRemove([uid])
+                ])
+            } else {
+                try await threadRef.updateData([
+                    "likes": FieldValue.arrayUnion([uid])
+                ])
+                
+                try notificationRef.setData(from: notificationModel.self)
+            }
+        } catch {
+            debugPrint("Error: Could not like / dislike the thread")
+        }
+    }
+    
+    func repost(thread: ThreadModel) async {
+        guard let uid = auth.currentUser?.uid else { return }
+        do {
+            let threadRef = db.collection("threads").document(thread.id)
+            let reposts = thread.reposts
+            
+            if reposts.contains(uid) {
+                try await threadRef.updateData([
+                    "reposts": FieldValue.arrayRemove([uid])
+                ])
+            } else {
+                try await threadRef.updateData([
+                    "reposts": FieldValue.arrayUnion([uid])
+                ])
+            }
+        } catch {
+            debugPrint("Error: Could not repost the thread")
+        }
+    }
+    
     private func getRepliesData() async throws {
         for i in 0..<replies.count {
             let authorId = replies[i].authorId

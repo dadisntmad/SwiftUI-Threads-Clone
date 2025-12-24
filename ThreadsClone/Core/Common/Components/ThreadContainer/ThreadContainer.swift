@@ -4,19 +4,17 @@ import Kingfisher
 struct ThreadContainer: View {
     @Environment(AuthViewModel.self) private var authViewModel
     
-    @State private var isLiked = false
+    @State private var threadDetailsViewModel = ThreadDetailsViewModel()
+    
     @State private var showHeart = false
     
     let thread: ThreadModel
-    
-    private func toggleLike() {
-        isLiked.toggle()
-    }
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             let imageUrl = thread.user?.imageUrl
             let isImageUrlValid = imageUrl != nil && !(imageUrl?.isEmpty ?? false)
+            let isLiked = thread.likes.contains(authViewModel.user?.uid)
             
             ProfileImage(
                 imageUrl: isImageUrlValid ? imageUrl : nil,
@@ -72,8 +70,8 @@ struct ThreadContainer: View {
                 // action buttons
                 HStack(spacing: 18) {
                     Button {
-                        withAnimation {
-                            toggleLike()
+                        Task {
+                            await threadDetailsViewModel.toggleLike(thread: thread)
                         }
                     } label: {
                         HStack(spacing: 5) {
@@ -111,7 +109,11 @@ struct ThreadContainer: View {
                     )
                     
                     ThreadActionButton(
-                        action: {},
+                        action: {
+                            Task {
+                                await threadDetailsViewModel.repost(thread: thread)
+                            }
+                        },
                         icon: Icons.repost,
                         count: thread.reposts.count,
                         size: 14,
